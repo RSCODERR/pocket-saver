@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="static/styles.css">
+    <script>
+        // Function to submit form for registration
+        async function handleRegister(event) {
+            event.preventDefault(); // Prevent default form submission
+            const form = document.getElementById("authForm");
+            form.action = "/register"; // Set form action for registration
+
+            const formData = new FormData(form);
+            const response = await fetch(form.action, {
+                method: "POST",
+                body: formData
+            });
+
+            // Handle 409 Conflict (e.g., username already taken)
+            if (response.status === 409) {
+                document.getElementById("message").textContent = "Username already taken. Please choose another.";
+                document.getElementById("message").style.color = "red";
+            } else if (response.ok) {
+                window.location.href = "/templates/jindex.html"; // Redirect to jindex.html on successful registration
+            } else {
+                document.getElementById("message").textContent = "Registration failed. Please try again.";
+                document.getElementById("message").style.color = "red";
+            }
+        }
+
+        // Function to handle login
+        async function handleLogin(event) {
+            event.preventDefault(); // Prevent form from auto-submission
+
+            const form = document.getElementById("authForm");
+            form.action = "/login"; // Set action for login
+
+            const formData = new FormData(form);
+            const response = await fetch(form.action, {
+                method: "POST",
+                body: formData
+            });
+
+            // Handle 401 Unauthorized for login
+            if (response.status === 401) {
+                document.getElementById("message").textContent = "Invalid username or password. Please try again.";
+                document.getElementById("message").style.color = "red";
+            } else if (response.ok) {
+                window.location.href = "./jindex.html"; // Redirect to jindex.html on successful login
+            } else {
+                document.getElementById("message").textContent = "Login failed. Please try again.";
+                document.getElementById("message").style.color = "red";
+            }
+        }
+    </script>
+</head>
+
+<body>
+    <form id="authForm" method="post" onsubmit="handleLogin(event)">
+
+        <div>
+            <h1 class="hod">POCKET SAVER</h1>
+        </div>
+        <div class="container">
+                <label for="username"><b>Username</b></label>
+                <input type="text" placeholder="Enter Username" name="username" required>
+                <label for="password"><b>Password</b></label>
+                <input type="password" placeholder="Enter Password" name="password" required>
+                <button type="submit">Login</button>
+                <div class="button-container">
+                    <button type="button" class="register-button" onclick="handleRegister(event)">Register</button>
+                    <label class="remember-label">
+                        <input type="checkbox" checked="checked" name="remember">Remember me
+                    </label>
+                </div>
+        </div>
+        </div>
+        <div id="message"></div>
+    </form>
+</body>
+</html>
